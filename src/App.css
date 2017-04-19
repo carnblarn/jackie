@@ -1,24 +1,124 @@
-.App {
+.container-fluid {
+  margin-top: 40px;
+  max-width: 580px;
+  padding-bottom: 60px;
+}
+.title {
+  font-size: 32px;
+  margin-bottom: 30px;
   text-align: center;
+  width:100%;
+  text-transform: uppercase;
+  color: #333;
+  font-weight: 900;
+}
+.board{
+    position:relative;
+    margin: 20px 0;
+    position: relative;
 }
 
-.App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 80px;
+.gameScreen {
+  position: relative;
 }
 
-.App-header {
-  background-color: #222;
-  height: 150px;
-  padding: 20px;
+.pieceContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  opacity: 1;
+}
+
+
+.pieceContainer.gameOver {
+  animation: fadeout 2s;
+  opacity: 0;
+
+}
+
+@keyframes fadeout {
+    from { opacity: 1; }
+    to   { opacity: 0; }
+}
+
+.piece{
+    width:23%;
+    padding-bottom: 23%;
+    height: 0;
+    margin-bottom: 12px;
+    background-size:cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.piece:active {
+  transform: scale(.97, .97);
+  transition: .03s;
+}
+
+.directions {
+  font-size: 18px;
+  text-align: center;
+  margin-top: 8px;
+  margin-bottom: 16px;
+}
+
+.scoreheader {
+  margin-bottom: 20px;
+}
+
+.scores {
+  text-align: center;
+  display:inline-block;
+}
+
+.currentScore, .bestScore{
+  display: inline-block;
+  margin-right: 16px;
+  background-color: #1BBC9B;
+  padding: 9px 18px;
+  border-radius: 4px;
   color: white;
+  font-weight: 700;
+  margin-bottom: 10px;
 }
 
-.App-intro {
-  font-size: large;
+.score-enter {
+  transform: scale(.9, .9);
 }
 
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.score-enter.score-enter-active {
+  transform: scale(1, 1);
+  transition: transform 300ms ease-in;
+}
+
+
+
+.subheader {
+  margin-bottom: 30px;
+}
+
+.timer .rc-progress-line-trail {
+  stroke-width: 3;
+}
+
+.timer {
+  margin-right: 16px;
+}
+
+.gameOverScreen {
+  position: absolute;
+  animation: fadein 2s;
+
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgb(238, 228, 218);
+}
+
+@keyframes fadein {
+    from { background: rgba(238, 228, 218, 0); }
+    to   { background: rgba(238, 228, 218, .83); }
 }
