@@ -1,45 +1,26 @@
 import React, { Component } from 'react';
 import { Line } from 'rc-progress';
-import CSSTransitionGroup from 'react-transition-group/CSSTransitionGroup';
+import { Preload } from 'react-preload';
+import { notJackieUrls, jackieUrls } from './Images';
+import jackieStart from './photos/jackieStart.jpg';
 
 import './App.css';
 
-const notJackieUrls = [
-  'kelsey.jpg',
-  'poe.jpg',
-  'toothpaste.jpg',
-  'pizza.jpg',
-  'lamp.jpg',
-  'bruce.jpg',
-  'yao.jpg',
-  'xi.jpg',
-  'ken.jpg',
-  'john.jpg',
-]
-
-function preloadImage(url) {
-  const img = new Image();
-  img.src = url;
-}
-
-function setup() {
-  notJackieUrls.forEach((url) => {
-    preloadImage(`photos/${url}`);
-  })
-  for (let i = 2; i < 26; i ++ ) {
-    preloadImage(`photos/jackie${i}.jpg`);
-  }
-}
-
-
-setup();
+const FREEZE_GAME = false;
 
 class App extends Component {
   render() {
     return (
       <div className="container-fluid">
-        <div className="title">It's not <span className="jackieTitle">Jackie Chan</span></div>
+        <div className="title">It's not <span className="jackieTitle">Jackie Chan!</span></div>
           <Board />
+          <div className="video">
+            <span>Check out </span>
+            <a href='https://www.youtube.com/watch?v=d8u4CEBVq7s'>
+              <b>the video</b>
+            </a>
+            <span> that inspired this</span>
+          </div>
       </div>
     );
   }
@@ -51,6 +32,7 @@ class Board extends Component {
     this.state = {};
     this.startGame = this.startGame.bind(this);
     this.generatePieces = this.generatePieces.bind(this);
+    this.reset = this.reset.bind(this);
   }
   componentDidMount() {
     this.startGame();
@@ -62,13 +44,13 @@ class Board extends Component {
     for (let i = 0; i < 16; i ++) {
       let url;
       if (i === notJackie) {
-        url = `photos/${notJackieUrls[level]}`;
+        url = notJackieUrls[level];
       }
       else {
         const rand = Math.floor(Math.random() * imageNumbers.length);
         // good images: 2-24
-        const imageNumber = Number(imageNumbers.splice(rand, 1)) + 2;
-        url = `photos/jackie${imageNumber}.jpg`;
+        const imageNumber = Number(imageNumbers.splice(rand, 1));
+        url = jackieUrls[imageNumber];
       }
       pieces.push(
         <Piece
@@ -91,6 +73,11 @@ class Board extends Component {
         this.setState({
           bestLevel: nextLevel,
         })
+      }
+      if (nextLevel > notJackieUrls.length - 1) {
+        this.setState({
+          gameWon: true,
+        });
       }
       this.setState({
         level: nextLevel,
@@ -124,38 +111,90 @@ class Board extends Component {
       freezeTimer: true,
     })
   }
+  reset() {
+    this.startGame();
+  }
   render() {
     let timeFor;
     if (this.state.level === 0) {
       timeFor = 24000;
     }
     else {
-      timeFor = 6000 - this.state.level * 500; 
+      timeFor = 6000 - this.state.level * 175; 
     }
-    return (
-      <div className="board">
-        <div className="row scoreheader">
-          <div className="directions col-xs-12 col-sm-7">Find the one person that isn't <b>Jackie</b>!</div>
-          <div className="col-xs-12 col-sm-5 scores">
-            <LevelScore level={this.state.level} />
-            <LevelScore best={true} level={this.state.bestLevel} />
+    let gameScreen;
+    if (this.state.gameOver) {
+      gameScreen = (
+        <GameOverScreen
+          url={this.state.losingUrl}
+          method={this.state.losingMethod}
+          reset={this.reset}
+        />
+      );
+    } else if (this.state.gameWon) {
+      gameScreen = (
+        <GameWonScreen
+        />
+      );
+    } else {
+      gameScreen = (
+        <div style={{height: '100%'}}>
+          <div className="subheader">
+            <Timer freeze={this.state.freezeTimer} onFinish={() => this.outOfTime()} timeFor={timeFor} />
           </div>
-        </div>
-        <div className="subheader">
-          <Timer freeze={this.state.freezeTimer} onFinish={() => this.outOfTime()} timeFor={timeFor} />
-        </div>
-        <div className="gameScreen">
-          {
-
-            // this.state.gameOver && <GameOverScreen url={this.state.losingUrl} method={this.state.losingMethod}/>
-          }
           <div className={`pieceContainer ${this.state.gameOver ? 'gameOver' : ''}`}>
             {this.state.pieces}
           </div>
         </div>
+      );
+    }
+    return (
+      <div className="board">
+        <div className="scoreheader">
+          <div className="directions">Find the one picture which isn't <b>Jackie Chan</b></div>
+          <div className="scores">
+            <LevelScore level={this.state.level} />
+            <LevelScore best={true} level={this.state.bestLevel} />
+          </div>
+        </div>
+        <div className="gameScreen">
+          <Preload
+            autoResolveDelay={10000}
+            images={notJackieUrls.concat(jackieUrls)}
+            loadingIndicator={<Loading />}
+          >
+            {gameScreen}
+          </Preload>
+        </div>
       </div>
       
     )
+  }
+}
+
+class Loading extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hidden: true,
+    }
+  }
+  componentWillMount() {
+    setTimeout(() => {
+      this.setState({hidden: false})
+    }, 800);
+  }
+  render() {
+    if (this.state.hidden) {
+      return <div />
+    }
+    return (
+        <div className='loading'>
+          <div className="ball-grid-pulse">
+            <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+          </div>
+        </div>
+    );
   }
 }
 
@@ -184,7 +223,13 @@ class Timer extends Component {
       })
     }
   }
+  componentWillUnmount() {
+    clearInterval(this.interval);
+  }
   startTimer() {
+    if (FREEZE_GAME) {
+      return;
+    }
     if (this.interval) {
       clearInterval(this.interval);
     }
@@ -215,7 +260,7 @@ class Timer extends Component {
         className="timer"
         percent={percentComplete}
         strokeWidth={4}
-        strokeColor={'#446CB3'}
+        strokeColor={'#1E8BC3'}
         trailColor={'#DADFE1'}
 
       />
@@ -241,53 +286,85 @@ class GameOverScreen extends Component {
     // wrong piece
     if (this.props.method === 0) {
       errorMessage = (
-        <span>That's Jackie Chan!</span>
+        <span className='errorMessage'>That's Jackie Chan!</span>
       )
     }
     // out of time
     else if (this.props.method === 1) {
       errorMessage = (
-          <span>Time has run out</span>
+          <span className='errorMessage'>The time is up</span>
       )
     }
     return (
-      <div className="gameOverScreen">
-        <div className="gameOverTitle">
-          Game over
-        </div>
-        {
-          this.props.url &&
-          (
-            <div 
-              onClick={this.props.onClick}
-              style={{backgroundImage: `url(${this.props.url})`}}
-              className="piece"
-            />
-          )
-        }
-        <div className="errorMessage">
-          {errorMessage}
-        </div>
+      <div className="gameOverScreenContainer">
+        <div className="gameOverScreen">
+          {
+            this.props.url &&
+            (
+              <div 
+                onClick={this.props.onClick}
+                style={{backgroundImage: `url(${this.props.url})`}}
+                className="piece"
+                alt="Why can't you get one right?!"
+              />
+            )
+          }
+          <div className="errorMessage">
+            {errorMessage}
+          </div>
+          <div onClick={this.props.reset} className="resetButton">
+            Play again
+          </div>
+      </div>
       </div>
     )
   }
 }
 
-class LevelScore extends Component {
-  componentWillReceiveProps(nextProps) {
-
-  }
+class GameWonScreen extends Component {
   render() {
     return (
-      <CSSTransitionGroup
-        transitionName="score"
-        transitionAppear={true}
-        transitionAppearTimeout={700}
-      >
-        <div className="bestSscore currentScore">
-          {this.props.best ? 'Best' : 'Level'}: {this.props.level + 1}
+      <div className="gameOverScreenContainer">
+        <div className="gameOverScreen">
+          <div className="errorMessage">
+            Congratulations. You didn't find Jackie!
+          </div>
+          <img
+            src={jackieStart}
+            height={300}
+          />
         </div>
-      </CSSTransitionGroup>
+      </div>
+    );
+  }
+}
+
+class LevelScore extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      animate: false
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.level === 0) {
+      return;
+    }
+    if (this.props.level !== nextProps.level) {
+      this.setState({
+        animate: true,
+      }, () => setTimeout(() => 
+        this.setState({
+          animate: false,
+        }), 400))
+    }
+  }
+  render() {
+    const className = this.state.animate ? 'currentScore pulse': 'currentScore';
+    return (
+      <div className={className}>
+        {this.props.best ? 'Best' : 'Level'}: {this.props.level + 1}
+      </div>
     );
   }
 }

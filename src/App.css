@@ -2,55 +2,58 @@
   margin-top: 40px;
   max-width: 580px;
   padding-bottom: 60px;
+  margin: 0 auto;
 }
 .title {
-  font-size: 32px;
-  margin-bottom: 30px;
+  font-family: Montserrat, sans-serif;
+  font-size: 36px;
+  margin-top: 60px;
+  margin-bottom: 12px;
   text-align: center;
   width:100%;
   text-transform: uppercase;
-  color: #333;
-  font-weight: 900;
+  color: #444;
+  font-weight: 700;
 }
-.board{
+.board {
     position:relative;
     margin: 20px 0;
-    position: relative;
 }
 
+
+/* ny00341734301 */
 .gameScreen {
-  position: relative;
+  width: 100%;
+  display: block;
+  max-width: 580px;
 }
+
 
 .pieceContainer {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  opacity: 1;
-}
-
-
-.pieceContainer.gameOver {
-  animation: fadeout 2s;
-  opacity: 0;
+  display: grid;
+  height: 580px;
+  width: 100%;
+  grid-template-columns: repeat(4, 23%);
+  grid-template-rows: repeat(4, 23%);
+  grid-row-gap: 13px;
+  grid-column-gap: 13px;
 
 }
 
-@keyframes fadeout {
-    from { opacity: 1; }
-    to   { opacity: 0; }
+@media (max-width: 580px) {
+  .pieceContainer {
+    height: 100vw;
+  }
 }
 
 .piece{
-    width:23%;
-    padding-bottom: 23%;
-    height: 0;
-    margin-bottom: 12px;
     background-size:cover;
     background-repeat: no-repeat;
     cursor: pointer;
     border-radius: 4px;
+    box-shadow: 1px 1px 3px 0px #111;
 }
+
 
 .piece:active {
   transform: scale(.97, .97);
@@ -65,27 +68,62 @@
 }
 
 .scoreheader {
+  display: flex;
   margin-bottom: 20px;
+  justify-content: space-between;
+}
+@media (max-width: 580px) {
+  .scoreheader {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@keyframes pulse{
+  from {
+    transform: scale3d(1, 1, 1);
+    opacity: 1;
+  }
+  50% {
+    opacity: .9;
+    transform: scale3d(1.110, 1.110, 1.110)
+  }
+  to {
+    transform: scale3d(1, 1, 1);
+    opacity: 1;
+  }
 }
 
 .scores {
+  width: 200px;
+  display: flex;
   text-align: center;
-  display:inline-block;
+  justify-content: space-between;
 }
 
-.currentScore, .bestScore{
+
+.currentScore {
+  width: 58px;
   display: inline-block;
-  margin-right: 16px;
-  background-color: #1BBC9B;
+  background-color: #34495e;
   padding: 9px 18px;
   border-radius: 4px;
+  font-size: 14px;
   color: white;
   font-weight: 700;
   margin-bottom: 10px;
 }
 
+.currentScore.pulse {
+  animation: pulse .3s;
+}
+.score {
+  opacity: 1;
+}
+
 .score-enter {
-  transform: scale(.9, .9);
+  opacity: 0;
+   transition: opacity 500ms ease-in;
 }
 
 .score-enter.score-enter-active {
@@ -96,29 +134,197 @@
 
 
 .subheader {
-  margin-bottom: 30px;
+  margin-bottom: 12px;
 }
 
 .timer .rc-progress-line-trail {
   stroke-width: 3;
 }
 
-.timer {
-  margin-right: 16px;
+
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .gameOverScreen {
-  position: absolute;
-  animation: fadein 2s;
-
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgb(238, 228, 218);
+  animation: fadein .5s;
+  height: 570px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding-top: 50px;
 }
 
-@keyframes fadein {
-    from { background: rgba(238, 228, 218, 0); }
-    to   { background: rgba(238, 228, 218, .83); }
+.gameOverTitle {
+  font-size: 20px;
+  text-align: center;
+  text-transform: uppercase;
+  color: #444;
+  font-weight: 900;
+}
+
+.errorMessage {
+  font-size: 24px;
+  font-weight:900;
+  text-align: center;
+}
+
+.video {
+  padding-top: 8px;
+  text-align: center;
+  padding-bottom: 12px;
+}
+.video a {
+  color: #34495e;
+}
+
+.resetButton {
+  margin-top: 12px;
+  cursor: pointer;
+  font-size: 18px;
+  display: inline-block;
+  background-color: #446CB3;
+  padding: 9px 18px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+
+/* ball grid stuff*/
+
+
+
+@-webkit-keyframes ball-grid-pulse {
+    0% {
+        -webkit-transform: scale(1);
+        transform: scale(1)
+    }
+    50% {
+        -webkit-transform: scale(.5);
+        transform: scale(.5);
+        opacity: .7
+    }
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 1
+    }
+}
+
+@keyframes ball-grid-pulse {
+    0% {
+        -webkit-transform: scale(1);
+        transform: scale(1)
+    }
+    50% {
+        -webkit-transform: scale(.5);
+        transform: scale(.5);
+        opacity: .7
+    }
+    100% {
+        -webkit-transform: scale(1);
+        transform: scale(1);
+        opacity: 1
+    }
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.ball-grid-pulse {
+    width: 69px
+
+}
+  .ball-grid-pulse>div {
+      height: 15px;
+      border-radius: 100%;
+      display: inline-block;
+      background-color: #2C3E50;
+      margin: 2px
+  }
+
+.ball-grid-pulse>div:nth-child(1) {
+    -webkit-animation-delay: .22s;
+    animation-delay: .22s;
+    -webkit-animation-duration: .9s;
+    animation-duration: .9s
+}
+
+.ball-grid-pulse>div:nth-child(2) {
+    -webkit-animation-delay: .64s;
+    animation-delay: .64s;
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s
+}
+
+.ball-grid-pulse>div:nth-child(3) {
+    -webkit-animation-delay: -.15s;
+    animation-delay: -.15s;
+    -webkit-animation-duration: .63s;
+    animation-duration: .63s
+}
+
+.ball-grid-pulse>div:nth-child(4) {
+    -webkit-animation-delay: -30ms;
+    animation-delay: -30ms;
+    -webkit-animation-duration: 1.24s;
+    animation-duration: 1.24s
+}
+
+.ball-grid-pulse>div:nth-child(5) {
+    -webkit-animation-delay: 80ms;
+    animation-delay: 80ms;
+    -webkit-animation-duration: 1.37s;
+    animation-duration: 1.37s
+}
+
+.ball-grid-pulse>div:nth-child(6) {
+    -webkit-animation-delay: .43s;
+    animation-delay: .43s;
+    -webkit-animation-duration: 1.55s;
+    animation-duration: 1.55s
+}
+
+.ball-grid-pulse>div:nth-child(7) {
+    -webkit-animation-delay: 50ms;
+    animation-delay: 50ms;
+    -webkit-animation-duration: .7s;
+    animation-duration: .7s
+}
+
+.ball-grid-pulse>div:nth-child(8) {
+    -webkit-animation-delay: 50ms;
+    animation-delay: 50ms;
+    -webkit-animation-duration: .97s;
+    animation-duration: .97s
+}
+
+.ball-grid-pulse>div:nth-child(9) {
+    -webkit-animation-delay: .3s;
+    animation-delay: .3s;
+    -webkit-animation-duration: .63s;
+    animation-duration: .63s
+}
+
+.ball-grid-pulse>div {
+    width: 15px;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+    float: left;
+    -webkit-animation-name: ball-grid-pulse;
+    animation-name: ball-grid-pulse;
+    -webkit-animation-iteration-count: infinite;
+    animation-iteration-count: infinite;
+    -webkit-animation-delay: 0;
+    animation-delay: 0
 }
