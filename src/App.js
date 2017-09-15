@@ -21,6 +21,11 @@ class App extends Component {
             </a>
             <span> that inspired this</span>
           </div>
+          <div className="video">
+            <a href='https://www.github.com/carnye/jackie'>
+              <b>Github</b>
+            </a>
+          </div>
       </div>
     );
   }
@@ -304,7 +309,7 @@ class GameOverScreen extends Component {
               <div 
                 onClick={this.props.onClick}
                 style={{backgroundImage: `url(${this.props.url})`}}
-                className="piece"
+                className="piece wrongPiece"
                 alt="Why can't you get one right?!"
               />
             )
